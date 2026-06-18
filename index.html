@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Notification Management System</h1>
+
+    <div class="card">
+
+        <label>User Name</label>
+        <input type="text" id="user" placeholder="Enter user name">
+
+        <label>Notification Message</label>
+        <textarea id="message" placeholder="Enter message"></textarea>
+
+        <label>Notification Channel</label>
+
+        <select id="channel">
+            <option>Email</option>
+            <option>SMS</option>
+            <option>Push</option>
+        </select>
+
+        <button onclick="sendNotification()">
+            Send Notification
+        </button>
+
+    </div>
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+
+function sendNotification(){
+
+    const user=document.getElementById("user").value;
+    const message=document.getElementById("message").value;
+    const channel=document.getElementById("channel").value;
+
+    if(user=="" || message==""){
+
+        alert("Please fill all fields");
+        return;
+
+    }
+
+    document.getElementById("result").innerHTML=`
+
+        <div class="success">
+
+        <h3>Notification Queued Successfully</h3>
+
+        <p><b>User:</b> ${user}</p>
+
+        <p><b>Channel:</b> ${channel}</p>
+
+        <p><b>Status:</b> Pending</p>
+
+        </div>
+
+    `;
+
+}
+
+</script>
+
+</body>
+</html>
