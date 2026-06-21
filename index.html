@@ -1,78 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notification System</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notification System Simulation</title>
+  <meta name="description" content="Interactive Notification System Architecture Simulation – visualize real-time notification flow through API Gateway, queues, push delivery and storage layers." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
-<div class="container">
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="app-title">Notification System</h1>
+        <p class="app-subtitle">Architecture Simulation Dashboard</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-badge" id="systemStatus">
+        <span class="status-dot"></span>
+        <span>System Ready</span>
+      </div>
+      <div class="sim-counter">
+        <span class="counter-label">Simulations</span>
+        <span class="counter-value" id="simCount">0</span>
+      </div>
+    </div>
+  </header>
 
-    <h1>Notification Management System</h1>
-
-    <div class="card">
-
-        <label>User Name</label>
-        <input type="text" id="user" placeholder="Enter user name">
-
-        <label>Notification Message</label>
-        <textarea id="message" placeholder="Enter message"></textarea>
-
-        <label>Notification Channel</label>
-
-        <select id="channel">
-            <option>Email</option>
-            <option>SMS</option>
-            <option>Push</option>
-        </select>
-
-        <button onclick="sendNotification()">
-            Send Notification
-        </button>
-
+  <!-- ===== CONTROL PANEL ===== -->
+  <section class="control-panel" aria-label="Simulation Controls">
+    <div class="control-group">
+      <label class="ctrl-label" for="permissionSelect">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Permission
+      </label>
+      <select class="ctrl-select" id="permissionSelect">
+        <option value="allowed">Allowed</option>
+        <option value="blocked">Blocked</option>
+      </select>
     </div>
 
-    <div id="result"></div>
+    <div class="control-group">
+      <label class="ctrl-label" for="networkSelect">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+          <path d="M5 12.55a11 11 0 0 1 14.08 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M1.42 9a16 16 0 0 1 21.16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="20" r="1" fill="currentColor"/>
+        </svg>
+        Network
+      </label>
+      <select class="ctrl-select" id="networkSelect">
+        <option value="online">Online</option>
+        <option value="offline">Offline</option>
+      </select>
+    </div>
 
-</div>
+    <div class="control-group">
+      <label class="ctrl-label" for="phoneModeSelect">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Phone Mode
+      </label>
+      <select class="ctrl-select" id="phoneModeSelect">
+        <option value="normal">Normal</option>
+        <option value="silent">Silent</option>
+        <option value="vibrate">Vibrate</option>
+        <option value="meeting">Meeting</option>
+      </select>
+    </div>
 
-<script>
+    <div class="control-group">
+      <label class="ctrl-label" for="appStateSelect">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        App State
+      </label>
+      <select class="ctrl-select" id="appStateSelect">
+        <option value="foreground">Foreground</option>
+        <option value="background">Background</option>
+        <option value="hidden">Hidden</option>
+      </select>
+    </div>
 
-function sendNotification(){
+    <div class="control-group">
+      <label class="ctrl-label" for="notifTypeSelect">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Type
+      </label>
+      <select class="ctrl-select" id="notifTypeSelect">
+        <option value="message">Message</option>
+        <option value="alert">Alert</option>
+        <option value="reminder">Reminder</option>
+        <option value="update">Update</option>
+        <option value="promo">Promo</option>
+      </select>
+    </div>
 
-    const user=document.getElementById("user").value;
-    const message=document.getElementById("message").value;
-    const channel=document.getElementById("channel").value;
+    <div class="ctrl-buttons">
+      <button class="btn btn-primary" id="createNotifBtn" title="Create a new notification">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Create Notification
+      </button>
+      <button class="btn btn-secondary" id="runSimBtn" title="Run full simulation">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+          <polygon points="5 3 19 12 5 21 5 3" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        Run Simulation
+      </button>
+      <button class="btn btn-danger" id="resetBtn" title="Reset simulation">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Reset
+      </button>
+    </div>
+  </section>
 
-    if(user=="" || message==""){
+  <!-- ===== MAIN LAYOUT ===== -->
+  <main class="main-layout">
 
-        alert("Please fill all fields");
-        return;
+    <!-- ===== LEFT PANEL: Architecture ===== -->
+    <aside class="left-panel" aria-label="System Architecture">
+      <div class="panel-header">
+        <svg class="panel-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h2>System Architecture</h2>
+      </div>
 
-    }
+      <div class="arch-flow" id="archFlow">
 
-    document.getElementById("result").innerHTML=`
-
-        <div class="success">
-
-        <h3>Notification Queued Successfully</h3>
-
-        <p><b>User:</b> ${user}</p>
-
-        <p><b>Channel:</b> ${channel}</p>
-
-        <p><b>Status:</b> Pending</p>
-
+        <!-- 1. CLIENT LAYER -->
+        <div class="arch-layer" id="layer-client" data-layer="client">
+          <div class="layer-title">
+            <span class="layer-badge">01</span>
+            Client Layer
+          </div>
+          <div class="layer-modules">
+            <div class="module-card" id="mod-user" data-module="user">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </span>
+              <span class="mod-label">User</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-app" data-module="app">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Mobile / Web App</span>
+              <div class="mod-status-dot"></div>
+            </div>
+          </div>
         </div>
 
-    `;
+        <div class="arch-arrow" id="arrow-client-api">
+          <div class="arrow-line">
+            <div class="arrow-packet" id="packet-client-api"></div>
+          </div>
+          <div class="arrow-head">&#9660;</div>
+        </div>
 
-}
+        <!-- 2. API LAYER -->
+        <div class="arch-layer" id="layer-api" data-layer="api">
+          <div class="layer-title">
+            <span class="layer-badge">02</span>
+            API Layer
+          </div>
+          <div class="layer-modules">
+            <div class="module-card" id="mod-gateway" data-module="gateway">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <polyline points="16 3 21 3 21 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="4" y1="20" x2="21" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <polyline points="21 16 21 21 16 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="15" y1="15" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">API Gateway</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-auth" data-module="auth">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Authentication</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-notifapi" data-module="notifapi">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Notification API</span>
+              <div class="mod-status-dot"></div>
+            </div>
+          </div>
+        </div>
 
-</script>
+        <div class="arch-arrow" id="arrow-api-stream">
+          <div class="arrow-line">
+            <div class="arrow-packet" id="packet-api-stream"></div>
+          </div>
+          <div class="arrow-head">&#9660;</div>
+        </div>
 
+        <!-- 3. EVENT STREAMING -->
+        <div class="arch-layer" id="layer-stream" data-layer="stream">
+          <div class="layer-title">
+            <span class="layer-badge">03</span>
+            Event Streaming
+          </div>
+          <div class="layer-modules">
+            <div class="module-card" id="mod-publish" data-module="publish">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Publish Event</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card queue-card" id="mod-queue" data-module="queue">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Notification Queue</span>
+              <div class="queue-visual" id="queueVisual">
+                <div class="queue-slot" id="qs1"></div>
+                <div class="queue-slot" id="qs2"></div>
+                <div class="queue-slot" id="qs3"></div>
+              </div>
+              <div class="mod-status-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-arrow" id="arrow-stream-proc">
+          <div class="arrow-line">
+            <div class="arrow-packet" id="packet-stream-proc"></div>
+          </div>
+          <div class="arrow-head">&#9660;</div>
+        </div>
+
+        <!-- 4. NOTIFICATION PROCESSING -->
+        <div class="arch-layer" id="layer-proc" data-layer="proc">
+          <div class="layer-title">
+            <span class="layer-badge">04</span>
+            Notification Processing
+          </div>
+          <div class="layer-modules">
+            <div class="module-card" id="mod-worker" data-module="worker">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Notification Worker</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-decision" data-module="decision">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </span>
+              <span class="mod-label">Delivery Decision Engine</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card retry-card" id="mod-retry" data-module="retry">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <polyline points="1 4 1 10 7 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Retry Queue</span>
+              <div class="retry-counter" id="retryCounter">0</div>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card dlq-card" id="mod-dlq" data-module="dlq">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" stroke="currentColor" stroke-width="2"/>
+                  <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Dead Letter Queue</span>
+              <div class="dlq-counter" id="dlqCounter">0</div>
+              <div class="mod-status-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-arrow" id="arrow-proc-push">
+          <div class="arrow-line">
+            <div class="arrow-packet" id="packet-proc-push"></div>
+          </div>
+          <div class="arrow-head">&#9660;</div>
+        </div>
+
+        <!-- 5. PUSH DELIVERY -->
+        <div class="arch-layer" id="layer-push" data-layer="push">
+          <div class="layer-title">
+            <span class="layer-badge">05</span>
+            Push Delivery
+          </div>
+          <div class="layer-modules">
+            <div class="module-card" id="mod-pushgw" data-module="pushgw">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Push Gateway</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-firebase" data-module="firebase">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Firebase / APNS</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-mobiledev" data-module="mobiledev">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                  <line x1="12" y1="18" x2="12.01" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Mobile Device</span>
+              <div class="mod-status-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-arrow" id="arrow-push-device">
+          <div class="arrow-line">
+            <div class="arrow-packet" id="packet-push-device"></div>
+          </div>
+          <div class="arrow-head">&#9660;</div>
+        </div>
+
+        <!-- 6. USER DEVICE -->
+        <div class="arch-layer" id="layer-device" data-layer="device">
+          <div class="layer-title">
+            <span class="layer-badge">06</span>
+            User Device
+          </div>
+          <div class="layer-modules">
+            <div class="module-card" id="mod-permission" data-module="permission">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Notification Permission</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-appstate" data-module="appstate">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">App State</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-network" data-module="network">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M5 12.55a11 11 0 0 1 14.08 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M1.42 9a16 16 0 0 1 21.16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="12" cy="20" r="1" fill="currentColor"/>
+                </svg>
+              </span>
+              <span class="mod-label">Network</span>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-phonemode" data-module="phonemode">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.62 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 16.92z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </span>
+              <span class="mod-label">Phone Mode</span>
+              <div class="mod-status-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-arrow" id="arrow-device-storage">
+          <div class="arrow-line">
+            <div class="arrow-packet" id="packet-device-storage"></div>
+          </div>
+          <div class="arrow-head">&#9660;</div>
+        </div>
+
+        <!-- 7. STORAGE LAYER -->
+        <div class="arch-layer" id="layer-storage" data-layer="storage">
+          <div class="layer-title">
+            <span class="layer-badge">07</span>
+            Storage Layer
+          </div>
+          <div class="layer-modules">
+            <div class="module-card db-card" id="mod-sqlite" data-module="sqlite">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <ellipse cx="12" cy="5" rx="9" ry="3" stroke="currentColor" stroke-width="2"/>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" stroke="currentColor" stroke-width="2"/>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </span>
+              <span class="mod-label">SQLite Database</span>
+              <div class="db-rows" id="dbRows">
+                <div class="db-row-header">
+                  <span>ID</span><span>Status</span>
+                </div>
+              </div>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card redis-card" id="mod-redis" data-module="redis">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Redis Cache (24h)</span>
+              <div class="redis-slots" id="redisSlots"></div>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-cleanup" data-module="cleanup">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Cleanup Scheduler</span>
+              <button class="cleanup-btn" id="cleanupBtn">Run Cleanup</button>
+              <div class="mod-status-dot"></div>
+            </div>
+            <div class="module-card" id="mod-tokenstore" data-module="tokenstore">
+              <span class="mod-icon-svg">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="mod-label">Device Token Store</span>
+              <div class="mod-status-dot"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /arch-flow -->
+    </aside>
+
+    <!-- ===== RIGHT PANEL: Console + Phone ===== -->
+    <section class="right-panel" aria-label="Simulation Console">
+
+      <!-- Phone Mockup -->
+      <div class="phone-section">
+        <div class="phone-mockup" id="phoneMockup">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen" id="phoneScreen">
+              <div class="phone-status-bar">
+                <span>9:41</span>
+                <span class="status-bar-icons">
+                  <svg viewBox="0 0 24 24" fill="none" width="10" height="10">
+                    <path d="M5 12.55a11 11 0 0 1 14.08 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M1.42 9a16 16 0 0 1 21.16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="20" r="1" fill="currentColor"/>
+                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" width="10" height="10">
+                    <rect x="2" y="7" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M22 11v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <rect x="4" y="9" width="10" height="7" rx="1" fill="currentColor"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="phone-content">
+                <div class="phone-idle" id="phoneIdle">
+                  <svg class="phone-idle-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  <div class="phone-idle-text">Waiting...</div>
+                </div>
+                <div class="phone-notification-popup hidden" id="phoneNotifPopup">
+                  <div class="popup-app-row">
+                    <span class="popup-app-icon" id="popupIconSvg">
+                      <svg viewBox="0 0 24 24" fill="none" width="12" height="12">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </span>
+                    <span class="popup-app-name" id="popupApp">NotifyApp</span>
+                    <span class="popup-time">now</span>
+                  </div>
+                  <div class="popup-title" id="popupTitle">Notification</div>
+                  <div class="popup-body" id="popupBody">You have a new notification.</div>
+                </div>
+              </div>
+              <!-- Mode indicator -->
+              <div class="phone-mode-indicator" id="phoneModeIndicator"></div>
+            </div>
+            <!-- Vibrate rings -->
+            <div class="vibrate-ring" id="vibrateRing1"></div>
+            <div class="vibrate-ring" id="vibrateRing2"></div>
+            <!-- Bell visual -->
+            <div class="bell-container hidden" id="bellContainer">
+              <svg class="bell-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div class="bell-waves">
+                <div class="bell-wave"></div>
+                <div class="bell-wave"></div>
+                <div class="bell-wave"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-label" id="phoneModeLabel">Normal Mode</div>
+      </div>
+
+      <!-- Console -->
+      <div class="console-section">
+        <div class="console-header">
+          <div class="console-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="console-title">Live Simulation Console</span>
+          <div class="console-actions">
+            <button class="console-clear-btn" id="consoleClearBtn" title="Clear console">Clear</button>
+          </div>
+        </div>
+        <div class="console-body" id="consoleBody">
+          <div class="console-welcome">
+            <div class="welcome-icon-svg">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="welcome-text">
+              <strong>System Initialized</strong>
+              <span>Configure settings above and click Run Simulation to begin.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Storage Table -->
+      <div class="storage-section">
+        <div class="storage-header">
+          <svg class="storage-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+            <ellipse cx="12" cy="5" rx="9" ry="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" stroke="currentColor" stroke-width="2"/>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <h3>Notification Storage — SQLite + Redis</h3>
+          <div class="storage-stats">
+            <span id="totalStored">0 stored</span>
+            <span id="totalCached"> &middot; 0 cached</span>
+          </div>
+        </div>
+        <div class="storage-table-wrap">
+          <table class="storage-table" id="storageTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Type</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Time</th>
+                <th>TTL</th>
+              </tr>
+            </thead>
+            <tbody id="storageTableBody">
+              <tr class="empty-row">
+                <td colspan="7">No notifications yet. Run a simulation to see data.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ===== FLOATING NOTIFICATION TOAST ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="script.js"></script>
 </body>
 </html>
